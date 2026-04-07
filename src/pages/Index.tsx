@@ -5,15 +5,16 @@ import StatsSection from "@/components/StatsSection";
 import PortfolioGrid from "@/components/PortfolioGrid";
 import ServicesSection from "@/components/ServicesSection";
 import FooterSection from "@/components/FooterSection";
+import VideoCarouselBg from "@/components/VideoCarouselBg";
 
 const Index = () => {
   return (
     <main className="relative overflow-hidden">
-      {/* Film grain overlay */}
       <div className="film-grain" />
-
       <HeroSection />
+      <VideoCarouselBg/>
       <VisualCore />
+   
       <Marquee />
       <StatsSection />
       <PortfolioGrid />
