@@ -1,8 +1,12 @@
 import { motion } from "framer-motion";
+import VideoCarouselBg from "./VideoCarouselBg";
 
 const HeroSection = () => {
   return (
     <section className="relative min-h-screen flex flex-col justify-between px-6 md:px-12 lg:px-20 pt-24 pb-10 overflow-hidden">
+      {/* Background video carousel texture */}
+      <VideoCarouselBg />
+
       {/* Ambient radial gradients */}
       <div className="absolute inset-0 pointer-events-none">
         <div className="absolute top-1/4 left-1/4 w-[600px] h-[600px] rounded-full bg-primary/[0.03] blur-[120px]" />
