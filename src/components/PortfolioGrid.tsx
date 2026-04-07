@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, animate, PanInfo } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import portfolio1 from "@/assets/portfolio-1.jpg";
 import portfolio2 from "@/assets/portfolio-2.jpg";
 import portfolio3 from "@/assets/portfolio-3.jpg";
@@ -22,10 +23,12 @@ interface CardProps {
   total: number;
   onSwipe: () => void;
   isTop: boolean;
+  xRef?: React.MutableRefObject<ReturnType<typeof useMotionValue<number>> | null>;
 }
 
-const Card = ({ project, index, total, onSwipe, isTop }: CardProps) => {
+const Card = ({ project, index, total, onSwipe, isTop, xRef }: CardProps) => {
   const x = useMotionValue(0);
+  if (isTop && xRef) xRef.current = x;
   const rotate = useTransform(x, [-300, 0, 300], [-18, 0, 18]);
   const opacity = useTransform(x, [-300, -100, 0, 100, 300], [0.5, 1, 1, 1, 0.5]);
 
@@ -98,6 +101,7 @@ const Card = ({ project, index, total, onSwipe, isTop }: CardProps) => {
 
 const PortfolioGrid = () => {
   const [order, setOrder] = useState(() => projects.map((_, i) => i));
+  const topCardX = useRef<ReturnType<typeof useMotionValue<number>> | null>(null);
 
   const handleSwipe = () => {
     setOrder((prev) => {
@@ -105,6 +109,18 @@ const PortfolioGrid = () => {
       const top = next.pop()!;
       next.unshift(top);
       return next;
+    });
+  };
+
+  const triggerSwipe = (direction: 1 | -1) => {
+    const x = topCardX.current;
+    if (!x) return;
+    animate(x, direction * 600, {
+      duration: 0.4,
+      onComplete: () => {
+        x.set(0);
+        handleSwipe();
+      },
     });
   };
 
@@ -121,6 +137,15 @@ const PortfolioGrid = () => {
       </motion.h2>
 
       <div className="flex justify-center items-center">
+        {/* Previous arrow */}
+        <button
+          onClick={() => triggerSwipe(-1)}
+          className="hidden md:flex items-center justify-center w-12 h-12 rounded-full border border-foreground/10 text-foreground/40 hover:text-foreground hover:border-foreground/30 hover:scale-110 transition-all duration-300 mr-10 lg:mr-16 shrink-0"
+          aria-label="Anterior"
+        >
+          <ChevronLeft size={20} strokeWidth={1} />
+        </button>
+
         <div
           className="relative"
           style={{ width: "min(320px, 70vw)", height: "calc(min(320px, 70vw) * 16 / 9)" }}
@@ -133,9 +158,19 @@ const PortfolioGrid = () => {
               total={order.length}
               onSwipe={handleSwipe}
               isTop={i === order.length - 1}
+              xRef={i === order.length - 1 ? topCardX : undefined}
             />
           ))}
         </div>
+
+        {/* Next arrow */}
+        <button
+          onClick={() => triggerSwipe(1)}
+          className="hidden md:flex items-center justify-center w-12 h-12 rounded-full border border-foreground/10 text-foreground/40 hover:text-foreground hover:border-foreground/30 hover:scale-110 transition-all duration-300 ml-10 lg:ml-16 shrink-0"
+          aria-label="Próximo"
+        >
+          <ChevronRight size={20} strokeWidth={1} />
+        </button>
       </div>
 
       <p className="text-center text-muted-foreground/40 text-xs uppercase tracking-[0.2em] mt-10">
