@@ -26,8 +26,9 @@ interface CardProps {
   xRef?: React.MutableRefObject<ReturnType<typeof useMotionValue<number>> | null>;
 }
 
-const Card = ({ project, index, total, onSwipe, isTop }: CardProps) => {
+const Card = ({ project, index, total, onSwipe, isTop, xRef }: CardProps) => {
   const x = useMotionValue(0);
+  if (isTop && xRef) xRef.current = x;
   const rotate = useTransform(x, [-300, 0, 300], [-18, 0, 18]);
   const opacity = useTransform(x, [-300, -100, 0, 100, 300], [0.5, 1, 1, 1, 0.5]);
 
