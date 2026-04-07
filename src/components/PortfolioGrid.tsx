@@ -23,6 +23,7 @@ interface CardProps {
   total: number;
   onSwipe: () => void;
   isTop: boolean;
+  xRef?: React.MutableRefObject<ReturnType<typeof useMotionValue<number>> | null>;
 }
 
 const Card = ({ project, index, total, onSwipe, isTop }: CardProps) => {
