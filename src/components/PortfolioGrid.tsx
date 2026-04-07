@@ -1,5 +1,6 @@
-import { useState } from "react";
+import { useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, animate, PanInfo } from "framer-motion";
+import { ChevronLeft, ChevronRight } from "lucide-react";
 import portfolio1 from "@/assets/portfolio-1.jpg";
 import portfolio2 from "@/assets/portfolio-2.jpg";
 import portfolio3 from "@/assets/portfolio-3.jpg";
