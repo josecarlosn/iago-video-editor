@@ -125,7 +125,7 @@ const PortfolioGrid = () => {
   };
 
   return (
-    <section id="portfolio" className="px-6 md:px-12 lg:px-20 py-24">
+    <section id="feedback" className="px-6 md:px-12 lg:px-20 py-24">
       <motion.h2
         initial={{ opacity: 0, y: 20 }}
         whileInView={{ opacity: 1, y: 0 }}

@@ -9,17 +9,44 @@ import VideoCarouselBg from "@/components/VideoCarouselBg";
 
 const Index = () => {
   return (
-    <main className="relative overflow-hidden">
+    
+    // O resto do arquivo continua exatamente igual!
+<main className="relative h-screen overflow-x-hidden overflow-y-scroll snap-y snap-proximity scroll-smooth">
       <div className="film-grain" />
-      <HeroSection />
-      <VideoCarouselBg/>
-      <VisualCore />
+      
+      <div className="snap-start min-h-screen relative">
+        <HeroSection />
+
+      </div>
+      <div className="snap-start min-h-screen relative">
+        <VideoCarouselBg/>
+      </div>
+
+      <div className="snap-start min-h-screen">
+        <VisualCore />
+      </div>
    
-      <Marquee />
-      <StatsSection />
-      <PortfolioGrid />
-      <ServicesSection />
-      <FooterSection />
+      
+      <div className="snap-start">
+        <Marquee />
+      </div>
+
+      <div className="snap-start min-h-screen">
+        <StatsSection />
+      </div>
+
+      <div className="snap-start min-h-screen">
+        <PortfolioGrid />
+      </div>
+
+      <div className="snap-start min-h-screen">
+        <ServicesSection />
+      </div>
+
+      {/* Footer também geralmente não ocupa a tela inteira */}
+      <div className="snap-start">
+        <FooterSection />
+      </div>
     </main>
   );
 };
