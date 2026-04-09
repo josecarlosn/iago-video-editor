@@ -18,18 +18,19 @@ const Index = () => {
         <HeroSection />
 
       </div>
+        
+
       <div className="snap-start min-h-screen relative">
-        <VideoCarouselBg/>
+        
+        {/* <VideoCarouselBg/> */}
       </div>
 
-      <div className="snap-start min-h-screen">
+      {/* <div className="snap-start min-h-screen">
         <VisualCore />
       </div>
    
       
-      <div className="snap-start">
-        <Marquee />
-      </div>
+      
 
       <div className="snap-start min-h-screen">
         <StatsSection />
@@ -43,10 +44,10 @@ const Index = () => {
         <ServicesSection />
       </div>
 
-      {/* Footer também geralmente não ocupa a tela inteira */}
+     
       <div className="snap-start">
         <FooterSection />
-      </div>
+      </div> */}
     </main>
   );
 };

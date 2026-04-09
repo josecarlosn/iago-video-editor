@@ -1,180 +1,161 @@
 import { useState, useRef } from "react";
-import { motion, useAnimationFrame, useMotionValue } from "framer-motion";
-import { X, Play } from "lucide-react";
+import { motion, AnimatePresence } from "framer-motion";
+import { X, Play, ChevronLeft, ChevronRight } from "lucide-react";
 
 const VIDEO_ITEMS = [
-  { id: 1, url: "video.mp4", category: "Motion Design", title: "Campanha Nike" },
-  { id: 2, url: "video2.mp4", category: "Web Design", title: "App Financeiro" },
-  { id: 3, url: "video3.mp4", category: "Branding", title: "Studio X" },
-  { id: 4, url: "video4.mp4", category: "Social Media", title: "Festival de Verão" },
+  { id: 1, url: "video.mp4", category: "Produto", title: "Tênis Running" },
+  { id: 2, url: "video2.mp4", category: "UI Design", title: "App Financeiro" },
+  { id: 3, url: "video3.mp4", category: "3D Art", title: "Formas Abstratas" },
+  { id: 4, url: "video4.mp4", category: "Social", title: "Festival Vibes" },
+  { id: 5, url: "video.mp4", category: "Branding", title: "Identidade Visual" },
+  { id: 6, url: "video2.mp4", category: "Motion", title: "Explosão de Cores" },
+  { id: 7, url: "video3.mp4", category: "3D Art", title: "Escultura Digital" },
+  { id: 8, url: "video4.mp4", category: "Social", title: "Campanha Verão" },
 ];
 
-const VideoCard = ({ item, isDragging, setSelectedVideo }) => {
-  const videoRef = useRef(null);
-  const hoverTimer = useRef(null);
-
-  const handleMouseEnter = () => {
-    hoverTimer.current = setTimeout(() => {
-      if (videoRef.current) {
-        videoRef.current.play().catch(error => console.log("Play interrompido:", error));
-      }
-    }, 1000);
-  };
-
-  const handleMouseLeave = () => {
-    if (hoverTimer.current) clearTimeout(hoverTimer.current);
-    if (videoRef.current) {
-      videoRef.current.pause();
-      videoRef.current.currentTime = 0;
-    }
-  };
-
+const ProjectCard = ({ item, setSelectedVideo }) => {
   return (
     <motion.div
-      whileHover={{ scale: 1.02 , backgroundColor: "rgb(255, 204, 0)"}}
-      whileTap={{ scale: 0.98 }}
-      onMouseEnter={handleMouseEnter}
-      onMouseLeave={handleMouseLeave}
-      onClick={() => {
-        if (!isDragging.current) {
-          setSelectedVideo(item.url);
-        }
-      }}
-      className="bg-background group shrink-0 w-[200px] md:w-[200px] aspect-[9/16] rounded-xl border border-white/10 relative overflow-hidden shadow-xl transition-all cursor-pointer"
+      initial={{ opacity: 0, y: 20 }}
+      whileInView={{ opacity: 1, y: 0 }}
+      viewport={{ once: true }}
+      onClick={() => setSelectedVideo(item.url)}
+      // w-[280px] a w-[320px] define a largura fixa para manter o 9:16 no carrossel
+      className="relative group cursor-pointer overflow-hidden bg-[#111] rounded-xl flex-shrink-0 w-[260px] md:w-[320px] aspect-[9/16] border border-white/5 hover:border-white/20 transition-all duration-500 snap-center shadow-xl"
     >
-      <div className="absolute inset-0 z-10 bg-gradient-to-t from-black/95 via-black/20 to-transparent pointer-events-none" />
-      
-      <video 
-        ref={videoRef}
-        src={item.url} 
-        muted 
-        loop 
-        playsInline
-        className="absolute inset-0 w-full h-full object-cover pointer-events-none opacity-90 group-hover:opacity-100 transition-opacity duration-500"
-      />
-
-      <div className="absolute inset-0 z-20 flex items-center justify-center pointer-events-none opacity-0 group-hover:opacity-100 transition-all duration-300 scale-75 group-hover:scale-100">
-        <div className="w-14 h-14 rounded-full bg-black/40 backdrop-blur-md border border-white/20 flex items-center justify-center">
-          <Play className="text-white fill-white ml-1" size={24} />
-        </div>
+      <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
+        <Play size={20} fill="white" className="text-white drop-shadow-md" />
       </div>
 
-      <div className="absolute bottom-0 left-0 w-full p-5 z-20 flex flex-col pointer-events-none translate-y-2 group-hover:translate-y-0 transition-transform duration-300">
-        <span className="text-[10px] uppercase tracking-[0.2em] text-white/60 font-bold mb-1">
+      <div className="absolute inset-0 z-20 flex flex-col justify-end p-5 md:p-6 opacity-0 group-hover:opacity-100 bg-gradient-to-t from-black via-black/40 to-transparent transition-opacity duration-300 pointer-events-none">
+        <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-neutral-400 font-bold mb-2">
           {item.category}
         </span>
-        <h3 className="text-white font-display text-lg md:text-xl font-bold leading-none">
+        <h3 className="text-white text-lg md:text-xl font-black uppercase leading-tight">
           {item.title}
         </h3>
       </div>
+
+      <video
+        src={item.url}
+        autoPlay
+        muted
+        loop
+        playsInline
+        className="w-full h-full object-cover opacity-60 group-hover:opacity-100 filter grayscale-[40%] group-hover:grayscale-0 transition-all duration-700"
+      />
     </motion.div>
   );
 };
 
-const VideoCarouselBg = () => {
+const PortfolioCarousel = () => {
   const [selectedVideo, setSelectedVideo] = useState(null);
-  const isDragging = useRef(false);
-  const trackRef = useRef(null); // Ref para medir o tamanho da pista
-  
-  // 1. O MOTOR DE MOVIMENTO: Guarda a posição exata em pixels
-  const xTranslation = useMotionValue(0);
+  const carouselRef = useRef(null);
 
-  // 2. LOOP INFINITO INTELIGENTE
-  useAnimationFrame(() => {
-    // Se estiver arrastando ou com o modal aberto, o motor pausa
-    if (isDragging.current || selectedVideo) return;
-    
-    let currentX = xTranslation.get();
-    
-    // VELOCIDADE (Aumente o número para ir mais rápido, ex: 1.5 ou 2.0)
-    currentX -= 0.5; 
-    
-    // Lógica mágica que teletransporta o carrossel invisivelmente para criar o loop
-    if (trackRef.current) {
-      const totalWidth = trackRef.current.scrollWidth;
-      const halfWidth = totalWidth / 2; // Metade do conteúdo (já que duplicamos os itens)
+  const scroll = (direction) => {
+    if (carouselRef.current) {
+      // Rola a largura aproximada de um card + gap
+      const scrollAmount = window.innerWidth < 768 ? 280 : 350; 
+      const { scrollLeft } = carouselRef.current;
+      const scrollTo = direction === "left" ? scrollLeft - scrollAmount : scrollLeft + scrollAmount;
       
-      // Se puxou muito para a esquerda, recua invisivelmente
-      if (currentX <= -halfWidth) {
-        currentX += halfWidth;
-      } 
-      // Se puxou para a direita, avança invisivelmente
-      else if (currentX > 0) {
-        currentX -= halfWidth;
-      }
+      carouselRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
     }
-    
-    xTranslation.set(currentX);
-  });
-
-  const carouselItems = [...VIDEO_ITEMS, ...VIDEO_ITEMS, ...VIDEO_ITEMS, ...VIDEO_ITEMS];
+  };
 
   return (
-    <section id="portfolio" className="relative w-full  min-h-screen overflow-hidden bg-foreground flex flex-col justify-center ">
+    <section id="portfolio" className="py-24 w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-[#050505] to-black min-h-screen relative scroll-mt-20 overflow-hidden text-white flex flex-col justify-center">
       
-      <div className=" top-24 left-10 md:left-20 z-10 pointer-events-none">
-        <h2 className="text-background font-display text-2xl uppercase tracking-widest opacity-80">
-          Projetos Recentes
+      {/* Fundo Granulado */}
+      <div 
+        className="absolute inset-0 z-0 opacity-[0.20] mix-blend-overlay pointer-events-none"
+        style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/stardust.png')" }} 
+      />
+
+      {/* Header */}
+      <div className="mb-12 text-center px-4 relative z-10 flex flex-col items-center">
+        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6 drop-shadow-lg">
+          Portfólio
         </h2>
+        <p className="text-neutral-400 text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed">
+          Uma curadoria de projetos onde estética encontra funcionalidade. 
+          Explorando fronteiras visuais através de design de interface, animação 3D e motion graphics 
+          para criar experiências digitais com impacto e propósito.
+        </p>
       </div>
 
-      <motion.div
-        ref={trackRef}
-        style={{ x: xTranslation }} // Conectamos a pista direto no motor físico
-        className="flex gap-6 md:gap-10 px-10 items-center cursor-grab active:cursor-grabbing w-max mt-12"
-        drag="x"
-        // REMOVIDO: dragConstraints e animate (não precisamos mais engessar)
-        onDragStart={() => {
-          isDragging.current = true;
-        }}
-        onDragEnd={() => {
-          setTimeout(() => {
-            isDragging.current = false;
-          }, 150);
-        }}
-      >
-        {carouselItems.map((item, i) => (
-          <VideoCard 
-            key={`video-${i}`} 
-            item={item} 
-            isDragging={isDragging} 
-            setSelectedVideo={setSelectedVideo} 
-          />
-        ))}
-      </motion.div>
-
-      {/* MODAL CINEMA */}
-      {selectedVideo && (
-        <motion.div
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          exit={{ opacity: 0 }}
-          className="fixed inset-0 z-[999] flex items-center justify-center bg-black/95 backdrop-blur-md p-6"
+      {/* Carrossel de Vídeos (Uma linha só) */}
+      <div className="relative w-full max-w-[1400px] mx-auto z-10 px-4 sm:px-12">
+        
+        {/* Setas Flutuantes */}
+        <button 
+          onClick={() => scroll("left")} 
+          className="absolute left-0 md:left-2 top-1/2 -translate-y-1/2 z-30 p-3 bg-black/50 hover:bg-black/80 backdrop-blur-md rounded-full border border-white/10 text-white transition-all hidden sm:flex"
         >
-          <button
-            onClick={() => setSelectedVideo(null)}
-            className="absolute top-8 right-8 text-white/70 hover:text-white bg-white/10 hover:bg-white/20 p-3 rounded-full transition-all z-50"
-          >
-            <X size={24} />
-          </button>
+          <ChevronLeft size={28} />
+        </button>
 
-          <motion.div
-            initial={{ scale: 0.9, y: 20 }}
-            animate={{ scale: 1, y: 0 }}
-            className="relative w-full max-w-[280px] md:max-w-[320px] max-h-[85vh] aspect-[9/16] bg-black rounded-2xl overflow-hidden shadow-2xl border border-white/10"
-          >
-            <video 
-              src={selectedVideo} 
-              autoPlay 
-              controls 
-              className="w-full h-full object-cover"
+        <button 
+          onClick={() => scroll("right")} 
+          className="absolute right-0 md:right-2 top-1/2 -translate-y-1/2 z-30 p-3 bg-black/50 hover:bg-black/80 backdrop-blur-md rounded-full border border-white/10 text-white transition-all hidden sm:flex"
+        >
+          <ChevronRight size={28} />
+        </button>
+
+        {/* Container que rola horizontalmente */}
+        <div 
+          ref={carouselRef}
+          className="flex overflow-x-auto gap-4 md:gap-6 pb-8 pt-4 px-4 snap-x snap-mandatory no-scrollbar"
+        >
+          {VIDEO_ITEMS.map((item) => (
+            <ProjectCard 
+              key={item.id} 
+              item={item} 
+              setSelectedVideo={setSelectedVideo} 
             />
-          </motion.div>
-        </motion.div>
-      )}
+          ))}
+        </div>
+      </div>
 
+      {/* Modal */}
+      <AnimatePresence>
+        {selectedVideo && (
+          <motion.div
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            exit={{ opacity: 0 }}
+            onClick={() => setSelectedVideo(null)}
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/98 backdrop-blur-md p-6"
+          >
+            <button className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors">
+              <X size={40} />
+            </button>
+
+            <motion.div
+              initial={{ scale: 0.9, opacity: 0 }}
+              animate={{ scale: 1, opacity: 1 }}
+              exit={{ scale: 0.9, opacity: 0 }}
+              onClick={(e) => e.stopPropagation()}
+              className="relative w-full max-w-[420px] max-h-[90vh] aspect-[9/16] bg-black rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.6)]"
+            >
+              <video 
+                src={selectedVideo} 
+                autoPlay 
+                controls 
+                className="w-full h-full object-cover"
+              />
+            </motion.div>
+          </motion.div>
+        )}
+      </AnimatePresence>
+
+      <style jsx>{`
+        /* Esconde a barra de rolagem mas mantém a funcionalidade */
+        .no-scrollbar::-webkit-scrollbar { display: none; }
+        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
+      `}</style>
     </section>
   );
 };
 
-export default VideoCarouselBg;
+export default PortfolioCarousel;
