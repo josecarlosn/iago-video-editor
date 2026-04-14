@@ -22,18 +22,16 @@ const Index = () => {
 
       <div className="snap-start min-h-screen relative">
         
-        {/* <VideoCarouselBg/> */}
+        <VideoCarouselBg/> 
       </div>
 
-      {/* <div className="snap-start min-h-screen">
-        <VisualCore />
-      </div>
-   
       
       
 
       <div className="snap-start min-h-screen">
+        <Marquee/>
         <StatsSection />
+        <VisualCore />
       </div>
 
       <div className="snap-start min-h-screen">
@@ -47,7 +45,7 @@ const Index = () => {
      
       <div className="snap-start">
         <FooterSection />
-      </div> */}
+      </div>
     </main>
   );
 };

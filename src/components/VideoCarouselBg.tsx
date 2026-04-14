@@ -1,123 +1,146 @@
-import { useState, useRef } from "react";
+import { useState } from "react";
 import { motion, AnimatePresence } from "framer-motion";
-import { X, Play, ChevronLeft, ChevronRight } from "lucide-react";
+import { X, Play, Video, BadgeCheck } from "lucide-react";
 
+// Mock de dados englobando as "métricas" falsas (ou reais) de cada vídeo
 const VIDEO_ITEMS = [
-  { id: 1, url: "video.mp4", category: "Produto", title: "Tênis Running" },
-  { id: 2, url: "video2.mp4", category: "UI Design", title: "App Financeiro" },
-  { id: 3, url: "video3.mp4", category: "3D Art", title: "Formas Abstratas" },
-  { id: 4, url: "video4.mp4", category: "Social", title: "Festival Vibes" },
-  { id: 5, url: "video.mp4", category: "Branding", title: "Identidade Visual" },
-  { id: 6, url: "video2.mp4", category: "Motion", title: "Explosão de Cores" },
-  { id: 7, url: "video3.mp4", category: "3D Art", title: "Escultura Digital" },
-  { id: 8, url: "video4.mp4", category: "Social", title: "Campanha Verão" },
+  { id: 1, url: "video.mp4", category: "Produto", title: "Tênis Running", views: "12K", comments: "34" },
+  { id: 2, url: "video2.mp4", category: "UI Design", title: "App Financeiro", views: "8K", comments: "12" },
+  { id: 3, url: "video3.mp4", category: "3D Art", title: "Formas Abstratas", views: "24K", comments: "105" },
+  { id: 4, url: "video4.mp4", category: "Social", title: "Festival Vibes", views: "15K", comments: "45" },
+  { id: 5, url: "video.mp4", category: "Branding", title: "Identidade Visual", views: "9K", comments: "22" },
+  { id: 6, url: "video2.mp4", category: "Motion", title: "Explosão de Cores", views: "41K", comments: "210" },
+  { id: 7, url: "video3.mp4", category: "3D Art", title: "Escultura Digital", views: "6K", comments: "8" },
+  { id: 8, url: "video4.mp4", category: "Social", title: "Campanha Verão", views: "33K", comments: "89" },
+  { id: 9, url: "video.mp4", category: "Vlog", title: "Cinematic Travel", views: "50K", comments: "312" },
 ];
 
 const ProjectCard = ({ item, setSelectedVideo }) => {
   return (
     <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      whileInView={{ opacity: 1, y: 0 }}
+      initial={{ opacity: 0, scale: 0.95 }}
+      whileInView={{ opacity: 1, scale: 1 }}
       viewport={{ once: true }}
       onClick={() => setSelectedVideo(item.url)}
-      // w-[280px] a w-[320px] define a largura fixa para manter o 9:16 no carrossel
-      className="relative group cursor-pointer overflow-hidden bg-[#111] rounded-xl flex-shrink-0 w-[260px] md:w-[320px] aspect-[9/16] border border-white/5 hover:border-white/20 transition-all duration-500 snap-center shadow-xl"
+      className="relative group cursor-pointer overflow-hidden bg-[#111] aspect-[9/16] transition-all hover:opacity-90"
     >
-      <div className="absolute top-4 right-4 z-10 opacity-0 group-hover:opacity-100 transition-opacity">
-        <Play size={20} fill="white" className="text-white drop-shadow-md" />
+      {/* Ícone de Reel Nativo no Canto superior direito */}
+      <div className="absolute top-2 right-2 md:top-3 md:right-3 z-10 opacity-90 drop-shadow-md">
+        <Play size={16} fill="white" className="text-white" />
       </div>
 
-      <div className="absolute inset-0 z-20 flex flex-col justify-end p-5 md:p-6 opacity-0 group-hover:opacity-100 bg-gradient-to-t from-black via-black/40 to-transparent transition-opacity duration-300 pointer-events-none">
-        <span className="text-[10px] md:text-xs uppercase tracking-[0.2em] text-neutral-400 font-bold mb-2">
-          {item.category}
-        </span>
-        <h3 className="text-white text-lg md:text-xl font-black uppercase leading-tight">
-          {item.title}
-        </h3>
+      {/* Hover Overlay Clean */}
+      <div className="absolute inset-0 z-20 flex items-center justify-center bg-black/10 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+        <Play fill="white" className="text-white drop-shadow-2xl scale-110" size={48} />
       </div>
 
+      {/* Videos renderizados com saturação, brilho e contraste elevados (Filtros Vivos) */}
       <video
         src={item.url}
-        autoPlay
         muted
         loop
+        autoPlay
         playsInline
-        className="w-full h-full object-cover opacity-60 group-hover:opacity-100 filter grayscale-[40%] group-hover:grayscale-0 transition-all duration-700"
+        className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-700 brightness-[1.08] contrast-[1.15] saturate-[1.3]"
       />
     </motion.div>
   );
 };
 
 const PortfolioCarousel = () => {
-  const [selectedVideo, setSelectedVideo] = useState(null);
-  const carouselRef = useRef(null);
-
-  const scroll = (direction) => {
-    if (carouselRef.current) {
-      // Rola a largura aproximada de um card + gap
-      const scrollAmount = window.innerWidth < 768 ? 280 : 350; 
-      const { scrollLeft } = carouselRef.current;
-      const scrollTo = direction === "left" ? scrollLeft - scrollAmount : scrollLeft + scrollAmount;
-      
-      carouselRef.current.scrollTo({ left: scrollTo, behavior: "smooth" });
-    }
-  };
+  const [selectedVideo, setSelectedVideo] = useState<string | null>(null);
 
   return (
-    <section id="portfolio" className="py-24 w-full bg-[radial-gradient(ellipse_at_top,_var(--tw-gradient-stops))] from-neutral-900 via-[#050505] to-black min-h-screen relative scroll-mt-20 overflow-hidden text-white flex flex-col justify-center">
+    <section id="portfolio" className="py-20 md:py-32 w-full bg-background min-h-screen relative flex flex-col items-center">
       
-      {/* Fundo Granulado */}
-      <div 
-        className="absolute inset-0 z-0 opacity-[0.20] mix-blend-overlay pointer-events-none"
-        style={{ backgroundImage: "url('https://www.transparenttextures.com/patterns/stardust.png')" }} 
-      />
-
-      {/* Header */}
-      <div className="mb-12 text-center px-4 relative z-10 flex flex-col items-center">
-        <h2 className="text-5xl md:text-7xl font-black uppercase tracking-tighter mb-6 drop-shadow-lg">
-          Portfólio
+      {/* Título Principal da Seção */}
+      <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2 md:mb-4 text-white drop-shadow-lg">
+          PORTFÓLIO
         </h2>
-        <p className="text-neutral-400 text-sm md:text-base max-w-2xl mx-auto font-medium leading-relaxed">
-          Uma curadoria de projetos onde estética encontra funcionalidade. 
-          Explorando fronteiras visuais através de design de interface, animação 3D e motion graphics 
-          para criar experiências digitais com impacto e propósito.
-        </p>
-      </div>
 
-      {/* Carrossel de Vídeos (Uma linha só) */}
-      <div className="relative w-full max-w-[1400px] mx-auto z-10 px-4 sm:px-12">
+      {/* Header do Perfil Instagram MOCK */}
+      <div className="w-full max-w-[935px] px-4 md:px-8 mb-8 md:mb-12 flex flex-col md:flex-row md:items-start gap-4 md:gap-16">
         
-        {/* Setas Flutuantes */}
-        <button 
-          onClick={() => scroll("left")} 
-          className="absolute left-0 md:left-2 top-1/2 -translate-y-1/2 z-30 p-3 bg-black/50 hover:bg-black/80 backdrop-blur-md rounded-full border border-white/10 text-white transition-all hidden sm:flex"
-        >
-          <ChevronLeft size={28} />
-        </button>
+        {/* Mobile Top Row: PFP + Username/Buttons & Desktop PFP */}
+        <div className="flex items-center md:items-start gap-5 md:gap-0 w-full md:w-auto">
+          {/* Foto de Perfil */}
+          <div className="w-[80px] h-[80px] md:w-[150px] md:h-[150px] rounded-full p-[3px] bg-gradient-to-tr from-[#FFC700] via-[#f9ce34] to-[#ee2a7b] flex-shrink-0 cursor-pointer transition-transform hover:scale-105">
+            <div className="w-full h-full rounded-full border-[3px] border-black bg-[#111] flex items-center justify-center overflow-hidden">
+               <span className="text-2xl md:text-5xl font-black text-white tracking-tighter">IG</span>
+            </div>
+          </div>
 
-        <button 
-          onClick={() => scroll("right")} 
-          className="absolute right-0 md:right-2 top-1/2 -translate-y-1/2 z-30 p-3 bg-black/50 hover:bg-black/80 backdrop-blur-md rounded-full border border-white/10 text-white transition-all hidden sm:flex"
-        >
-          <ChevronRight size={28} />
-        </button>
+          {/* User Name & Action Buttons Mobile ONLY */}
+          <div className="flex flex-col md:hidden flex-1 gap-2.5">
+            <div className="flex items-center gap-1">
+              <h2 className="text-lg text-white font-medium tracking-wide ">iagogamaeditor</h2>
+              <BadgeCheck className="text-blue-500" size={16} />
+            </div>
+            <div className="flex gap-2">
+              <a href="#contatos" className="bg-[#FFC700] flex-1 text-center text-black px-3 py-1.5 rounded-lg text-xs font-bold active:bg-yellow-500">
+                Seguir
+              </a>
+              <button className="bg-[#262626] active:bg-[#363636] border border-white/5 flex-1 text-white px-3 py-1.5 rounded-lg text-xs font-semibold">
+                Mensagem
+              </button>
+            </div>
+          </div>
+        </div>
 
-        {/* Container que rola horizontalmente */}
-        <div 
-          ref={carouselRef}
-          className="flex overflow-x-auto gap-4 md:gap-6 pb-8 pt-4 px-4 snap-x snap-mandatory no-scrollbar"
-        >
-          {VIDEO_ITEMS.map((item) => (
-            <ProjectCard 
-              key={item.id} 
-              item={item} 
-              setSelectedVideo={setSelectedVideo} 
-            />
-          ))}
+        {/* Bio e Infos Desktop + Mobile */}
+        <div className="flex flex-col w-full max-w-lg mt-1 md:mt-2">
+          
+          {/* Header Superior (Nome de usuário e botões) Desktop ONLY */}
+          <div className="hidden md:flex flex-row items-center gap-6 mb-6">
+            <div className="flex items-center gap-2">
+              <h2 className="text-2xl text-white font-medium tracking-wide">iagogamaeditor</h2>
+              <BadgeCheck className="text-blue-500" size={24} />
+            </div>
+            <div className="flex gap-2">
+              <a href="#contatos" className="bg-[#FFC700] text-black px-6 py-1.5 rounded-lg text-sm font-bold hover:bg-yellow-500 transition-colors">
+                 Seguir
+              </a>
+              <button className="bg-[#262626] hover:bg-[#363636] border border-white/5 text-white px-6 py-1.5 rounded-lg text-sm font-semibold transition-colors">
+                Mensagem
+              </button>
+            </div>
+          </div>
+
+          {/* Bio Text (Mobile and Desktop) */}
+          <div className="text-white text-[13px] md:text-sm font-normal flex flex-col md:items-start text-left">
+            <span className="font-bold text-[14px] md:text-base mb-1">Items Selecionados</span>
+            <span className="text-neutral-100">Projetos focados em retenção e edição dinâmica 🔥</span>
+            <span className="text-neutral-100">Trabalhos de destaque para marcas e criadores.</span>
+            <span className="text-neutral-100">👇 Orce seu próximo vídeo</span>
+            <a href="https://wa.me/77999358938" className="text-blue-200 mt-0.5 hover:text-blue-100 font-semibold">
+              wa.me/77999358938
+            </a>
+          </div>
+
         </div>
       </div>
 
-      {/* Modal */}
+      {/* Tabs Menu */}
+      <div className="w-full max-w-[935px] border-t border-white/15 flex justify-center mb-1">
+        <div className="flex gap-12 text-xs md:text-sm font-bold tracking-widest uppercase">
+          <div className="flex items-center gap-1.5 border-t-[1.5px] md:border-t-2 border-white md:px-2 py-3 md:py-4 text-white cursor-pointer -mt-[1px]">
+            <Video size={16} /> REELS
+          </div>
+        </div>
+      </div>
+
+      {/* Reels Grid (Feed View: 3 colunas no Mobile, 5 no PC) */}
+      <div className="w-full max-w-[1200px] grid grid-cols-3 md:grid-cols-5 gap-[2px] md:gap-2 px-[2px] md:px-0">
+        {VIDEO_ITEMS.map((item) => (
+          <ProjectCard
+            key={item.id}
+            item={item}
+            setSelectedVideo={setSelectedVideo}
+          />
+        ))}
+      </div>
+
+      {/* Modal / Visualizador do Vídeo (Estilo "Visualizar Reel") */}
       <AnimatePresence>
         {selectedVideo && (
           <motion.div
@@ -125,10 +148,10 @@ const PortfolioCarousel = () => {
             animate={{ opacity: 1 }}
             exit={{ opacity: 0 }}
             onClick={() => setSelectedVideo(null)}
-            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/98 backdrop-blur-md p-6"
+            className="fixed inset-0 z-[9999] flex items-center justify-center bg-black/95 backdrop-blur-sm p-4 md:p-6"
           >
-            <button className="absolute top-8 right-8 text-white/40 hover:text-white transition-colors">
-              <X size={40} />
+            <button className="absolute top-4 right-4 md:top-8 md:right-8 text-white/50 hover:text-white transition-all hover:rotate-90 hover:scale-110 z-50">
+              <X className="w-8 h-8 md:w-10 md:h-10" />
             </button>
 
             <motion.div
@@ -136,12 +159,12 @@ const PortfolioCarousel = () => {
               animate={{ scale: 1, opacity: 1 }}
               exit={{ scale: 0.9, opacity: 0 }}
               onClick={(e) => e.stopPropagation()}
-              className="relative w-full max-w-[420px] max-h-[90vh] aspect-[9/16] bg-black rounded-2xl overflow-hidden border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.6)]"
+              className="relative w-full max-w-[420px] max-h-[90vh] aspect-[9/16] bg-[#111] md:rounded-xl overflow-hidden border-0 md:border border-white/10 shadow-[0_0_80px_rgba(0,0,0,0.6)] flex flex-col"
             >
-              <video 
-                src={selectedVideo} 
-                autoPlay 
-                controls 
+              <video
+                src={selectedVideo}
+                autoPlay
+                controls
                 className="w-full h-full object-cover"
               />
             </motion.div>
@@ -149,11 +172,6 @@ const PortfolioCarousel = () => {
         )}
       </AnimatePresence>
 
-      <style jsx>{`
-        /* Esconde a barra de rolagem mas mantém a funcionalidade */
-        .no-scrollbar::-webkit-scrollbar { display: none; }
-        .no-scrollbar { -ms-overflow-style: none; scrollbar-width: none; }
-      `}</style>
     </section>
   );
 };

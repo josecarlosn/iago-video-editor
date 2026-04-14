@@ -1,12 +1,12 @@
 import { useRef, useState } from "react";
 import { motion, useMotionValue, useTransform, animate, PanInfo } from "framer-motion";
-import { ChevronLeft, ChevronRight } from "lucide-react";
 import portfolio1 from "@/assets/portfolio-1.jpg";
 import portfolio2 from "@/assets/portfolio-2.jpg";
 import portfolio3 from "@/assets/portfolio-3.jpg";
 import portfolio4 from "@/assets/portfolio-4.jpg";
 
-const projects = [
+// Array único para o deck central
+const feedbacks = [
   { img: portfolio1, title: "Lumina Spaces", category: "Arquitetura · Branding" },
   { img: portfolio2, title: "Noir Essentials", category: "Packaging · Identity" },
   { img: portfolio3, title: "Forma Sculpt", category: "3D · Art Direction" },
@@ -18,7 +18,7 @@ const SCALE_STEP = 0.04;
 const Y_OFFSET = 12;
 
 interface CardProps {
-  project: (typeof projects)[0];
+  project: any;
   index: number;
   total: number;
   onSwipe: () => void;
@@ -40,7 +40,7 @@ const Card = ({ project, index, total, onSwipe, isTop, xRef }: CardProps) => {
   const handleDragEnd = (_: unknown, info: PanInfo) => {
     if (Math.abs(info.offset.x) > 100 || Math.abs(info.velocity.x) > 500) {
       const direction = info.offset.x > 0 ? 1 : -1;
-      animate(x, direction * 600, {
+      animate(x, direction * 400, {
         duration: 0.4,
         onComplete: () => {
           x.set(0);
@@ -75,9 +75,10 @@ const Card = ({ project, index, total, onSwipe, isTop, xRef }: CardProps) => {
       }}
       transition={{ type: "spring", stiffness: 300, damping: 25 }}
     >
-      <div
-        className="relative w-full h-full rounded-2xl overflow-hidden border border-foreground/10"
-        style={{ aspectRatio: "9/16" }}
+      {/* Aspect Ratio ajustado para 10/16 */}
+      <div 
+        className="relative w-full h-full rounded-2xl overflow-hidden border border-background/20 bg-muted"
+        style={{ aspectRatio: "10/16" }}
       >
         <img
           src={project.img}
@@ -85,12 +86,12 @@ const Card = ({ project, index, total, onSwipe, isTop, xRef }: CardProps) => {
           loading="lazy"
           className="w-full h-full object-cover"
         />
-        <div className="absolute inset-0 bg-gradient-to-t from-background/70 via-transparent to-transparent" />
+        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
         <div className="absolute bottom-0 left-0 right-0 p-5">
-          <h3 className="font-display font-extrabold text-foreground text-base uppercase tracking-wide">
+          <h3 className="font-display font-extrabold text-white text-base uppercase tracking-wide">
             {project.title}
           </h3>
-          <p className="text-muted-foreground text-xs uppercase tracking-[0.15em] mt-1">
+          <p className="text-white/70 text-xs uppercase tracking-[0.15em] mt-1">
             {project.category}
           </p>
         </div>
@@ -99,8 +100,8 @@ const Card = ({ project, index, total, onSwipe, isTop, xRef }: CardProps) => {
   );
 };
 
-const PortfolioGrid = () => {
-  const [order, setOrder] = useState(() => projects.map((_, i) => i));
+const FeedbackDeck = ({ items }: { items: any[] }) => {
+  const [order, setOrder] = useState(() => items.map((_, i) => i));
   const topCardX = useRef<ReturnType<typeof useMotionValue<number>> | null>(null);
 
   const handleSwipe = () => {
@@ -112,72 +113,57 @@ const PortfolioGrid = () => {
     });
   };
 
-  const triggerSwipe = (direction: 1 | -1) => {
-    const x = topCardX.current;
-    if (!x) return;
-    animate(x, direction * 600, {
-      duration: 0.4,
-      onComplete: () => {
-        x.set(0);
-        handleSwipe();
-      },
-    });
-  };
-
   return (
-    <section id="feedback" className="px-6 md:px-12 lg:px-20 py-24">
-      <motion.h2
-        initial={{ opacity: 0, y: 20 }}
-        whileInView={{ opacity: 1, y: 0 }}
-        viewport={{ once: true }}
-        transition={{ duration: 0.6 }}
-        className="font-display font-extrabold text-foreground uppercase text-[clamp(1.5rem,4vw,3rem)] tracking-[-0.02em] mb-16"
-      >
-        Trabalhos Selecionados
-      </motion.h2>
+    // Aspect Ratio 10/16 aplicado ao container principal do deck
+    <div 
+      className="relative w-full max-w-[280px] sm:max-w-[320px] mx-auto"
+      style={{ aspectRatio: "10/16" }}
+    >
+      {order.map((itemIndex, i) => (
+        <Card
+          key={items[itemIndex].title + i}
+          project={items[itemIndex]}
+          index={i}
+          total={order.length}
+          onSwipe={handleSwipe}
+          isTop={i === order.length - 1}
+          xRef={i === order.length - 1 ? topCardX : undefined}
+        />
+      ))}
+    </div>
+  );
+};
 
-      <div className="flex justify-center items-center">
-        {/* Previous arrow */}
-        <button
-          onClick={() => triggerSwipe(-1)}
-          className="hidden md:flex items-center justify-center w-12 h-12 rounded-full border border-foreground/10 text-foreground/40 hover:text-foreground hover:border-foreground/30 hover:scale-110 transition-all duration-300 mr-10 lg:mr-16 shrink-0"
-          aria-label="Anterior"
+const FeedbackSection = () => {
+  return (
+    <section id="feedback" className="px-6 md:px-12 lg:px-20 py-24 bg-foreground overflow-hidden">
+      <div className="mb-20 text-center">
+        <motion.h2
+          initial={{ opacity: 0, y: 20 }}
+          whileInView={{ opacity: 1, y: 0 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6 }}
+          className="font-display font-extrabold text-background uppercase text-[clamp(2rem,5vw,4rem)] tracking-[-0.02em]"
         >
-          <ChevronLeft size={20} strokeWidth={1} />
-        </button>
-
-        <div
-          className="relative"
-          style={{ width: "min(320px, 70vw)", height: "calc(min(320px, 70vw) * 16 / 9)" }}
+          FEEDBACK
+        </motion.h2>
+        <motion.p 
+          initial={{ opacity: 0 }}
+          whileInView={{ opacity: 1 }}
+          viewport={{ once: true }}
+          transition={{ duration: 0.6, delay: 0.2 }}
+          className="text-background/50 text-xs uppercase tracking-[0.2em] mt-4"
         >
-          {order.map((projectIndex, i) => (
-            <Card
-              key={projects[projectIndex].title}
-              project={projects[projectIndex]}
-              index={i}
-              total={order.length}
-              onSwipe={handleSwipe}
-              isTop={i === order.length - 1}
-              xRef={i === order.length - 1 ? topCardX : undefined}
-            />
-          ))}
-        </div>
-
-        {/* Next arrow */}
-        <button
-          onClick={() => triggerSwipe(1)}
-          className="hidden md:flex items-center justify-center w-12 h-12 rounded-full border border-foreground/10 text-foreground/40 hover:text-foreground hover:border-foreground/30 hover:scale-110 transition-all duration-300 ml-10 lg:ml-16 shrink-0"
-          aria-label="Próximo"
-        >
-          <ChevronRight size={20} strokeWidth={1} />
-        </button>
+          Arraste os cards para ler
+        </motion.p>
       </div>
 
-      <p className="text-center text-muted-foreground/40 text-xs uppercase tracking-[0.2em] mt-10">
-        Arraste para explorar
-      </p>
+      {/* Container centralizado para um único deck */}
+      <div className="flex justify-center items-center">
+        <FeedbackDeck items={feedbacks} />
+      </div>
     </section>
   );
 };
 
-export default PortfolioGrid;
+export default FeedbackSection;
