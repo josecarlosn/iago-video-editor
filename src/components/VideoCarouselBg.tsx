@@ -54,7 +54,7 @@ const PortfolioCarousel = () => {
     <section id="portfolio" className="py-20 md:py-32 w-full bg-background min-h-screen relative flex flex-col items-center">
       
       {/* Título Principal da Seção */}
-      <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2 md:mb-4 text-white drop-shadow-lg">
+      <h2 className="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2 md:mb-28 text-white drop-shadow-lg">
           PORTFÓLIO
         </h2>
 
@@ -66,7 +66,7 @@ const PortfolioCarousel = () => {
           {/* Foto de Perfil */}
           <div className="w-[80px] h-[80px] md:w-[150px] md:h-[150px] rounded-full p-[3px] bg-gradient-to-tr from-[#FFC700] via-[#f9ce34] to-[#ee2a7b] flex-shrink-0 cursor-pointer transition-transform hover:scale-105">
             <div className="w-full h-full rounded-full border-[3px] border-black bg-[#111] flex items-center justify-center overflow-hidden">
-               <span className="text-2xl md:text-5xl font-black text-white tracking-tighter">IG</span>
+               <img src="/iago.jpg" alt="Logo" className="text-2xl md:text-5xl font-black text-white tracking-tighter" />
             </div>
           </div>
 
@@ -77,7 +77,7 @@ const PortfolioCarousel = () => {
               <BadgeCheck className="text-blue-500" size={16} />
             </div>
             <div className="flex gap-2">
-              <a href="#contatos" className="bg-[#FFC700] flex-1 text-center text-black px-3 py-1.5 rounded-lg text-xs font-bold active:bg-yellow-500">
+              <a href="#contatos" className="bg-blue-500 flex-1 text-center text-foreground px-3 py-1.5 rounded-lg text-xs font-bold active:bg-blue-800">
                 Seguir
               </a>
               <button className="bg-[#262626] active:bg-[#363636] border border-white/5 flex-1 text-white px-3 py-1.5 rounded-lg text-xs font-semibold">
@@ -97,7 +97,7 @@ const PortfolioCarousel = () => {
               <BadgeCheck className="text-blue-500" size={24} />
             </div>
             <div className="flex gap-2">
-              <a href="#contatos" className="bg-[#FFC700] text-black px-6 py-1.5 rounded-lg text-sm font-bold hover:bg-yellow-500 transition-colors">
+              <a href="#contatos" className="bg-blue-500 text-foreground px-6 py-1.5 rounded-lg text-sm font-bold hover:bg-yellow-500 transition-colors">
                  Seguir
               </a>
               <button className="bg-[#262626] hover:bg-[#363636] border border-white/5 text-white px-6 py-1.5 rounded-lg text-sm font-semibold transition-colors">

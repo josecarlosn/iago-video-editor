@@ -1,166 +1,101 @@
-import { useRef, useState } from "react";
-import { motion, useMotionValue, useTransform, animate, PanInfo } from "framer-motion";
-import portfolio1 from "@/assets/portfolio-1.jpg";
-import portfolio2 from "@/assets/portfolio-2.jpg";
-import portfolio3 from "@/assets/portfolio-3.jpg";
-import portfolio4 from "@/assets/portfolio-4.jpg";
+import { motion } from "framer-motion";
+import { Quote } from "lucide-react";
 
-// Array único para o deck central
+// Array único de feedbacks
 const feedbacks = [
-  { img: portfolio1, title: "Lumina Spaces", category: "Arquitetura · Branding" },
-  { img: portfolio2, title: "Noir Essentials", category: "Packaging · Identity" },
-  { img: portfolio3, title: "Forma Sculpt", category: "3D · Art Direction" },
-  { img: portfolio4, title: "Horizonte", category: "Photography · Editorial" },
+  { 
+    id: 1,
+    client: "Marina O.", 
+    role: "Diretora Criativa", 
+    quote: "O trabalho entregue superou nossas expectativas. Uma abordagem visual que realmente destacou nossa marca no mercado." 
+  },
+  { 
+    id: 2,
+    client: "Pedro S.", 
+    role: "Fundador", 
+    quote: "Profissionalismo impecável. O redesign completo da nossa plataforma aumentou nosso engajamento em mais de 40%." 
+  },
+  { 
+    id: 3,
+    client: "Ana L.", 
+    role: "Marketing Manager", 
+    quote: "A sensibilidade estética e a capacidade técnica formam uma combinação rara. O resultado final foi brilhante." 
+  },
+  { 
+    id: 4,
+    client: "Lucas F.", 
+    role: "CEO", 
+    quote: "Entregas no prazo e uma comunicação super transparente. O design final traduz perfeitamente a nossa visão." 
+  },
 ];
-
-const ROTATION_RANGE = 6;
-const SCALE_STEP = 0.04;
-const Y_OFFSET = 12;
-
-interface CardProps {
-  project: any;
-  index: number;
-  total: number;
-  onSwipe: () => void;
-  isTop: boolean;
-  xRef?: React.MutableRefObject<ReturnType<typeof useMotionValue<number>> | null>;
-}
-
-const Card = ({ project, index, total, onSwipe, isTop, xRef }: CardProps) => {
-  const x = useMotionValue(0);
-  if (isTop && xRef) xRef.current = x;
-  const rotate = useTransform(x, [-300, 0, 300], [-18, 0, 18]);
-  const opacity = useTransform(x, [-300, -100, 0, 100, 300], [0.5, 1, 1, 1, 0.5]);
-
-  const depth = total - 1 - index;
-  const scale = 1 - depth * SCALE_STEP;
-  const yOffset = depth * Y_OFFSET;
-  const rotationOffset = depth * (depth % 2 === 0 ? ROTATION_RANGE : -ROTATION_RANGE) * 0.4;
-
-  const handleDragEnd = (_: unknown, info: PanInfo) => {
-    if (Math.abs(info.offset.x) > 100 || Math.abs(info.velocity.x) > 500) {
-      const direction = info.offset.x > 0 ? 1 : -1;
-      animate(x, direction * 400, {
-        duration: 0.4,
-        onComplete: () => {
-          x.set(0);
-          onSwipe();
-        },
-      });
-    } else {
-      animate(x, 0, { type: "spring", stiffness: 500, damping: 30 });
-    }
-  };
-
-  return (
-    <motion.div
-      className="absolute inset-0 cursor-grab active:cursor-grabbing"
-      style={{
-        x: isTop ? x : 0,
-        rotate: isTop ? rotate : rotationOffset,
-        scale,
-        y: yOffset,
-        opacity: isTop ? opacity : 1 - depth * 0.15,
-        zIndex: index,
-      }}
-      drag={isTop ? "x" : false}
-      dragConstraints={{ left: 0, right: 0 }}
-      dragElastic={0.9}
-      onDragEnd={isTop ? handleDragEnd : undefined}
-      initial={false}
-      animate={{
-        scale,
-        y: yOffset,
-        rotate: isTop ? 0 : rotationOffset,
-      }}
-      transition={{ type: "spring", stiffness: 300, damping: 25 }}
-    >
-      {/* Aspect Ratio ajustado para 10/16 */}
-      <div 
-        className="relative w-full h-full rounded-2xl overflow-hidden border border-background/20 bg-muted"
-        style={{ aspectRatio: "10/16" }}
-      >
-        <img
-          src={project.img}
-          alt={project.title}
-          loading="lazy"
-          className="w-full h-full object-cover"
-        />
-        <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent" />
-        <div className="absolute bottom-0 left-0 right-0 p-5">
-          <h3 className="font-display font-extrabold text-white text-base uppercase tracking-wide">
-            {project.title}
-          </h3>
-          <p className="text-white/70 text-xs uppercase tracking-[0.15em] mt-1">
-            {project.category}
-          </p>
-        </div>
-      </div>
-    </motion.div>
-  );
-};
-
-const FeedbackDeck = ({ items }: { items: any[] }) => {
-  const [order, setOrder] = useState(() => items.map((_, i) => i));
-  const topCardX = useRef<ReturnType<typeof useMotionValue<number>> | null>(null);
-
-  const handleSwipe = () => {
-    setOrder((prev) => {
-      const next = [...prev];
-      const top = next.pop()!;
-      next.unshift(top);
-      return next;
-    });
-  };
-
-  return (
-    // Aspect Ratio 10/16 aplicado ao container principal do deck
-    <div 
-      className="relative w-full max-w-[280px] sm:max-w-[320px] mx-auto"
-      style={{ aspectRatio: "10/16" }}
-    >
-      {order.map((itemIndex, i) => (
-        <Card
-          key={items[itemIndex].title + i}
-          project={items[itemIndex]}
-          index={i}
-          total={order.length}
-          onSwipe={handleSwipe}
-          isTop={i === order.length - 1}
-          xRef={i === order.length - 1 ? topCardX : undefined}
-        />
-      ))}
-    </div>
-  );
-};
 
 const FeedbackSection = () => {
   return (
-    <section id="feedback" className="px-6 md:px-12 lg:px-20 py-24 bg-foreground overflow-hidden">
-      <div className="mb-20 text-center">
-        <motion.h2
-          initial={{ opacity: 0, y: 20 }}
+    <section id="feedback" className="px-6 md:px-12 lg:px-20 py-24 md:py-32 min-h-screen relative flex flex-col items-center justify-center overflow-hidden bg-background">
+      
+      {/* Glow Effect */}
+      <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 w-[800px] h-[800px] bg-[#FFC700]/5 rounded-full blur-[120px] opacity-70 pointer-events-none" />
+      
+      <div className="mb-16 md:mb-24 text-center relative z-10 w-full max-w-4xl">
+        <motion.h2 
+          initial={{ opacity: 0, y: -20 }}
           whileInView={{ opacity: 1, y: 0 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6 }}
-          className="font-display font-extrabold text-background uppercase text-[clamp(2rem,5vw,4rem)] tracking-[-0.02em]"
+          className="text-4xl md:text-7xl font-black uppercase tracking-tighter mb-2 md:mb-4 text-white drop-shadow-lg"
         >
-          FEEDBACK
+          O QUE DIZEM
         </motion.h2>
         <motion.p 
           initial={{ opacity: 0 }}
           whileInView={{ opacity: 1 }}
           viewport={{ once: true }}
           transition={{ duration: 0.6, delay: 0.2 }}
-          className="text-background/50 text-xs uppercase tracking-[0.2em] mt-4"
+          className="text-white/50 text-xs md:text-sm uppercase tracking-[0.3em] font-semibold"
         >
-          Arraste os cards para ler
+          Histórias de nossos clientes
         </motion.p>
       </div>
 
-      {/* Container centralizado para um único deck */}
-      <div className="flex justify-center items-center">
-        <FeedbackDeck items={feedbacks} />
+      <div className="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-8 w-full max-w-6xl relative z-10">
+        {feedbacks.map((project, index) => (
+          <motion.div
+            key={project.id}
+            initial={{ opacity: 0, y: 30 }}
+            whileInView={{ opacity: 1, y: 0 }}
+            viewport={{ once: true, amount: 0.1 }}
+            transition={{ duration: 0.5, delay: index * 0.1 }}
+            className="w-full relative rounded-3xl overflow-hidden border border-white/10 bg-gradient-to-br from-[#1c1c1c] to-[#0a0a0a] flex flex-col p-8 md:p-10 shadow-xl transiton-colors hover:border-white/20"
+          >
+            <div className="absolute inset-0 opacity-20 mix-blend-overlay pointer-events-none" style={{ backgroundImage: "url('data:image/svg+xml,%3Csvg viewBox=\"0 0 256 256\" xmlns=\"http://www.w3.org/2000/svg\"%3E%3Cfilter id=\"noise\"%3E%3CfeTurbulence type=\"fractalNoise\" baseFrequency=\"0.9\" numOctaves=\"4\" stitchTiles=\"stitch\"/%3E%3C/filter%3E%3Crect width=\"100%25\" height=\"100%25\" filter=\"url(%23noise)\"/%3E%3C/svg%3E')" }}></div>
+            
+            <div className="relative z-10 flex flex-col h-full">
+              <Quote className="text-[#FFC700]/30 w-10 h-10 mb-6 drop-shadow-lg" />
+              
+              <div className="flex-1 flex items-start mb-6">
+                 <p className="text-white/95 text-[clamp(1rem,3vw,1.25rem)] font-body leading-relaxed text-left font-medium drop-shadow-md">
+                   "{project.quote}"
+                 </p>
+              </div>
+              
+              <div className="mt-auto flex items-center pt-6 border-t border-white/10">
+                <div className="w-12 h-12 rounded-full mr-4 bg-gradient-to-tr from-[#FFC700] via-[#f9ce34] to-[#ee2a7b] p-[2px] flex-shrink-0">
+                  <div className="w-full h-full bg-[#111] rounded-full flex items-center justify-center overflow-hidden">
+                    <span className="text-white font-extrabold text-base tracking-tighter">{project.client.charAt(0)}</span>
+                  </div>
+                </div>
+                <div>
+                  <h3 className="font-display font-bold text-white text-base uppercase tracking-wide">
+                    {project.client}
+                  </h3>
+                  <p className="text-[#FFC700] text-[10px] uppercase tracking-[0.2em] font-semibold mt-0.5">
+                    {project.role}
+                  </p>
+                </div>
+              </div>
+            </div>
+          </motion.div>
+        ))}
       </div>
     </section>
   );

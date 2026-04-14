@@ -6,46 +6,53 @@ import PortfolioGrid from "@/components/PortfolioGrid";
 import ServicesSection from "@/components/ServicesSection";
 import FooterSection from "@/components/FooterSection";
 import VideoCarouselBg from "@/components/VideoCarouselBg";
+import { motion } from "framer-motion";
+
+const FadeInSection = ({ children, className }: { children: React.ReactNode; className?: string }) => {
+  return (
+    <motion.div
+      initial={{ opacity: 0 }}
+      whileInView={{ opacity: 1 }}
+      viewport={{ once: false, amount: 0.15 }}
+      transition={{ duration: 0.8, ease: "easeInOut" }}
+      className={className}
+    >
+      {children}
+    </motion.div>
+  );
+};
 
 const Index = () => {
   return (
-    
-    // O resto do arquivo continua exatamente igual!
-<main className="relative h-screen overflow-x-hidden overflow-y-scroll snap-y snap-proximity scroll-smooth">
+    <main className="relative h-screen overflow-x-hidden overflow-y-scroll snap-y snap-proximity scroll-smooth">
       <div className="film-grain" />
       
-      <div className="snap-start min-h-screen relative">
+      <FadeInSection className="snap-start min-h-screen relative">
         <HeroSection />
-
-      </div>
+      </FadeInSection>
         
-
-      <div className="snap-start min-h-screen relative">
+      <FadeInSection className="snap-start min-h-screen relative">
+        <VideoCarouselBg/>
         
-        <VideoCarouselBg/> 
-      </div>
+      </FadeInSection>
 
-      
-      
-
-      <div className="snap-start min-h-screen">
+      <FadeInSection className="snap-start min-h-screen">
         <Marquee/>
         <StatsSection />
         <VisualCore />
-      </div>
+      </FadeInSection>
 
-      <div className="snap-start min-h-screen">
+      <FadeInSection className="snap-start min-h-screen">
         <PortfolioGrid />
-      </div>
+      </FadeInSection>
 
-      <div className="snap-start min-h-screen">
+      <FadeInSection className="snap-start min-h-screen">
         <ServicesSection />
-      </div>
-
+      </FadeInSection>
      
-      <div className="snap-start">
+      <FadeInSection className="snap-start">
         <FooterSection />
-      </div>
+      </FadeInSection>
     </main>
   );
 };
